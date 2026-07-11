@@ -1,6 +1,6 @@
 # inter-agent-guard — PyPI validation demo
 
-Standalone project that installs **`inter-agent-guard`** from PyPI (not a local clone) and validates the library works.
+Standalone project that installs **`inter-agent-guard`** from PyPI (not a local clone) and validates the library works **with the ONNX ML model** from GitHub Releases.
 
 | PyPI install name | Python import |
 |-------------------|---------------|
@@ -11,7 +11,6 @@ Standalone project that installs **`inter-agent-guard`** from PyPI (not a local 
 ```powershell
 cd inter-agent-guard-demo
 
-# Optional: fresh venv
 py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 
@@ -19,30 +18,49 @@ py -3.12 -m pip install --upgrade pip
 py -3.12 -m pip install inter-agent-guard
 ```
 
+### Install ML model (required for enforce-mode)
+
+Downloads `risk_scorer.onnx` + `model.sha256` from the public v0.1.0 GitHub release into the installed package `models/` directory and verifies the SHA-256:
+
+```powershell
+py -3.12 install_model.py
+# re-download: py -3.12 install_model.py --force
+```
+
+`install_model.py` uses public HTTPS first, then falls back to `gh release download` / `GH_TOKEN` if needed.
+
 ## Run validation
 
 ```powershell
 py -3.12 run_validation.py
 ```
 
+`run_validation.py` calls `install_model.py` automatically if the ONNX file is missing, then runs with `require_ml_model=True` (fails if `ModelNotLoadedWarning` would have been raised).
+
 Checks:
 
 1. Import `agentguard` + version
-2. Load YAML manifests (JSON Schema from bundled package)
-3. Block prompt injection via `inspect_message()`
-4. Forward benign inter-agent messages
-5. Capability enforcement (`publish_external` denied)
-6. MCP tool output poisoning blocked
-7. CLI module importable
+2. ONNX install + hash verify + ML scorer loaded
+3. Load YAML manifests (JSON Schema from bundled package)
+4. Block prompt injection via `inspect_message()`
+5. Forward benign inter-agent messages
+6. Capability enforcement (`publish_external` denied)
+7. MCP tool output poisoning blocked
+8. CLI module importable
 
 Also try the CLI:
 
 ```powershell
-agentguard status
-agentguard inspect -m "Summarise public pricing from filings."
+py -3.12 -m agentguard status
+py -3.12 -m agentguard inspect -m "Summarise public pricing from filings."
 ```
 
 ## Notes
 
-- ML model (`risk_scorer.onnx`) is optional for this demo — rule filter handles injection tests.
-- For production enforce-mode with ML, download ONNX from [GitHub Releases](https://github.com/nizba06/agentguard/releases).
+- The PyPI wheel does **not** bundle the ONNX weights (~540 MB); they ship as [GitHub Release assets](https://github.com/nizba06/agentguard/releases/tag/v0.1.0).
+- Tokenizer files are already in the wheel under `agentguard/models/`.
+- Library repo: https://github.com/nizba06/agentguard
+
+## License
+
+Apache-2.0 — see [LICENSE](LICENSE).
