@@ -2,7 +2,7 @@
 """Download risk_scorer.onnx from the AgentGuard GitHub release into the installed package.
 
 The ONNX weights are not in the PyPI wheel (~540 MB). They ship on the public
-nizba06/agentguard v0.1.0 GitHub release. This script tries:
+nizba06/agentguard v1.0.0 GitHub release. This script tries:
 
 1. Skip if already installed (hash-verified)
 2. Public HTTPS URL (preferred)
@@ -24,11 +24,11 @@ import urllib.request
 from pathlib import Path
 
 REPO = "nizba06/agentguard"
-TAG = "v0.1.0"
+TAG = "v1.0.0"
 RELEASE_PAGE = f"https://github.com/{REPO}/releases/download/{TAG}"
 API_RELEASE = f"https://api.github.com/repos/{REPO}/releases/tags/{TAG}"
 FILES = ("risk_scorer.onnx", "model.sha256")
-UA = "inter-agent-guard-demo/0.1.0"
+UA = "inter-agent-guard-demo/1.0.0"
 
 
 def _package_models_dir() -> Path:

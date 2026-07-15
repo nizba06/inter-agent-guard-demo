@@ -36,11 +36,11 @@ def main() -> int:
     print(f"Version: {agentguard.__version__}")
     print(f"Installed at: {pkg_path}\n")
 
-    if agentguard.__version__ != "0.1.0":
-        print(f"  WARN  expected version 0.1.0, got {agentguard.__version__}")
+    if agentguard.__version__ != "1.0.0":
+        print(f"  WARN  expected version 1.0.0, got {agentguard.__version__}")
 
     # 1b. Install ONNX from GitHub release into the package models/ dir
-    print("Ensuring ML model (GitHub release v0.1.0)...")
+    print("Ensuring ML model (GitHub release v1.0.0)...")
     try:
         from install_model import ensure_model
 
