@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 audit.jsonl
+*.seal
 # ONNX weights (~540 MB) — download via install_model.py, not committed
 *.onnx
 models-tmp/

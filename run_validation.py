@@ -36,11 +36,11 @@ def main() -> int:
     print(f"Version: {agentguard.__version__}")
     print(f"Installed at: {pkg_path}\n")
 
-    if agentguard.__version__ != "1.0.0":
-        print(f"  WARN  expected version 1.0.0, got {agentguard.__version__}")
+    if not agentguard.__version__.startswith("1."):
+        print(f"  WARN  expected version 1.x, got {agentguard.__version__}")
 
     # 1b. Install ONNX from GitHub release into the package models/ dir
-    print("Ensuring ML model (GitHub release v1.0.0)...")
+    print("Ensuring ML model (GitHub release v1.0.0 ONNX assets)...")
     try:
         from install_model import ensure_model
 
@@ -115,8 +115,11 @@ def main() -> int:
             benign,
             benign.encode("utf-8"),
         )
-    if decision.action == "BLOCK":
-        _fail("inspect_message benign", f"unexpected BLOCK: {decision.failure_reason}")
+    if decision.action != "FORWARD":
+        _fail(
+            "inspect_message benign",
+            f"unexpected {decision.action}: {decision.failure_reason}",
+        )
     _ok("inspect_message allowed benign pipeline message")
 
     # 5. Capability enforcement

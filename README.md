@@ -15,12 +15,15 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 
 py -3.12 -m pip install --upgrade pip
-py -3.12 -m pip install inter-agent-guard
+py -3.12 -m pip install "inter-agent-guard>=1.1.0"
+# Optional Poetry: after 1.1.0 is on PyPI → poetry lock && poetry install
 ```
 
 ### Install ML model (required for enforce-mode)
 
-Downloads `risk_scorer.onnx` + `model.sha256` from the public v1.0.0 GitHub release into the installed package `models/` directory and verifies the SHA-256:
+Downloads `risk_scorer.onnx` + `model.sha256` from the public **v1.0.0** GitHub
+release (ONNX assets; package version is 1.1.x) into the installed package
+`models/` directory and verifies the SHA-256:
 
 ```powershell
 py -3.12 install_model.py
@@ -57,7 +60,7 @@ py -3.12 -m agentguard inspect -m "Summarise public pricing from filings."
 
 ## Notes
 
-- The PyPI wheel does **not** bundle the ONNX weights (~164 MB INT8); they ship as [GitHub Release assets](https://github.com/nizba06/agentguard/releases/tag/v1.0.0).
+- Install **`inter-agent-guard>=1.1.0`**. The wheel does **not** bundle the ONNX weights (~164 MB INT8); they still ship as [v1.0.0 GitHub Release assets](https://github.com/nizba06/agentguard/releases/tag/v1.0.0).
 - Tokenizer files are already in the wheel under `agentguard/models/`.
 - Library repo: https://github.com/nizba06/agentguard
 

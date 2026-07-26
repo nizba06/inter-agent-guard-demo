@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Download risk_scorer.onnx from the AgentGuard GitHub release into the installed package.
 
-The ONNX weights are not in the PyPI wheel (~540 MB). They ship on the public
-nizba06/agentguard v1.0.0 GitHub release. This script tries:
+The ONNX weights are not in the PyPI wheel (~164 MB INT8). Package
+``inter-agent-guard`` 1.1.x still downloads the public nizba06/agentguard
+**v1.0.0** GitHub release assets (same INT8 artifact). This script tries:
 
 1. Skip if already installed (hash-verified)
 2. Public HTTPS URL (preferred)
@@ -28,7 +29,7 @@ TAG = "v1.0.0"
 RELEASE_PAGE = f"https://github.com/{REPO}/releases/download/{TAG}"
 API_RELEASE = f"https://api.github.com/repos/{REPO}/releases/tags/{TAG}"
 FILES = ("risk_scorer.onnx", "model.sha256")
-UA = "inter-agent-guard-demo/1.0.0"
+UA = "inter-agent-guard-demo/1.1.0"
 
 
 def _package_models_dir() -> Path:
@@ -41,7 +42,11 @@ def _verify_hash(model_path: Path, hash_path: Path) -> None:
     expected = hash_path.read_text(encoding="utf-8").strip().lower()
     actual = hashlib.sha256(model_path.read_bytes()).hexdigest().lower()
     if actual != expected:
-        raise SystemExit(f"ONNX hash mismatch.\n  expected={expected}\n  actual=  {actual}")
+        raise SystemExit(
+            f"ONNX hash mismatch.\n  expected={expected}\n  actual=  {actual}\n"
+            "  Tip: delete the models files or re-run with --force "
+            "(py -3.12 install_model.py --force)."
+        )
     print(f"Hash OK: {actual}")
 
 
