@@ -1,0 +1,29 @@
+# Public zero-setup demo: scripted LLM + full AgentGuard stack (no Ollama required).
+FROM python:3.12-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY pyproject.toml README.md install_model.py ./
+COPY intelbrief ./intelbrief
+COPY manifests ./manifests
+COPY ui ./ui
+COPY scripts/start_public_demo.sh ./scripts/start_public_demo.sh
+
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir .
+
+RUN chmod +x scripts/start_public_demo.sh
+
+ENV LLM_BACKEND=scripted \
+    FIXTURE_MODE=local \
+    REQUIRE_ML_MODEL=true \
+    ENABLE_TRUST_ATTESTATION=true \
+    AGENTGUARD_MODE=enforce \
+    PYTHONUNBUFFERED=1
+
+EXPOSE 8501
+
+CMD ["scripts/start_public_demo.sh"]

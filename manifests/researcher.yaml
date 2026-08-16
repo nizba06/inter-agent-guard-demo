@@ -1,6 +1,7 @@
 agent_id: researcher
 permitted_tools:
   - web_search
+  - fetch_url
   - summarize
 forbidden_tools:
   - publish_external

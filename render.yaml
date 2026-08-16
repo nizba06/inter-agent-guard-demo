@@ -1,0 +1,20 @@
+# Render Blueprint — one-click public IntelBrief demo
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: intelbrief-demo
+    runtime: docker
+    dockerfilePath: ./Dockerfile.demo
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: LLM_BACKEND
+        value: scripted
+      - key: FIXTURE_MODE
+        value: local
+      - key: REQUIRE_ML_MODEL
+        value: "true"
+      - key: ENABLE_TRUST_ATTESTATION
+        value: "true"
+      - key: AGENTGUARD_MODE
+        value: enforce

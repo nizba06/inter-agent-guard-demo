@@ -8,8 +8,11 @@ audit_*.jsonl
 # Local audit / debug logs from demo runs
 [a-z].jsonl
 x.jsonl
-# Editable install metadata
+data/
+intelbrief.db
 *.egg-info/
+# Local audit logs (single-letter or numbered debug runs)
+c*.jsonl
 # ONNX weights (~540 MB) — download via install_model.py, not committed
 *.onnx
 models-tmp/
