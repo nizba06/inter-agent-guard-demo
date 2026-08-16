@@ -39,9 +39,8 @@ Open http://localhost:8501 — first start may take 2–5 minutes (ML model down
 4. Render detects **`render.yaml`** and shows service **`intelbrief-demo`**
 5. Review settings (free plan is fine) → click **Apply**
 6. Wait for deploy (**~5–15 minutes** on first run):
-   - Docker build (`pip install inter-agent-guard` from PyPI **once**)
-   - Container start → `install_model.py` (ONNX from GitHub)
-   - FastAPI + Streamlit start on Render’s `$PORT`
+   - Docker build (`pip install` + `install_model.py` ONNX download **once**)
+   - Container start → FastAPI + Streamlit on Render’s `$PORT`
 
 ---
 
@@ -88,6 +87,7 @@ Open http://localhost:8501 — first start may take 2–5 minutes (ML model down
    | `REQUIRE_ML_MODEL` | `true` |
    | `ENABLE_TRUST_ATTESTATION` | `true` |
    | `AGENTGUARD_MODE` | `enforce` |
+   | `ENVIRONMENT` | `production` |
 
 5. **Create Web Service** → wait until **Live**
 
@@ -98,7 +98,7 @@ Open http://localhost:8501 — first start may take 2–5 minutes (ML model down
 | Behavior | What to expect |
 |----------|----------------|
 | **Sleep after ~15 min idle** | Next visitor waits ~30–60s to wake |
-| **Cold start** | May re-run `install_model.py` (~164 MB) |
+| **Cold start** | Model is baked into the Docker image; startup verifies hash only (~seconds) |
 | **PyPI downloads** | Only at **Docker build**, not per visitor |
 
 Tell users: *“First load after idle may take 1–2 minutes.”*
@@ -110,6 +110,7 @@ Tell users: *“First load after idle may take 1–2 minutes.”*
 | Problem | Action |
 |---------|--------|
 | Build fails | Render → **Logs** → check `pip install` errors |
+| **`Out of memory (used over 512Mi)`** | Ensure `ENVIRONMENT=production` (disables uvicorn reload). Model must be baked in Docker build (`RUN python install_model.py` in `Dockerfile.demo`). Redeploy after pulling latest. If still OOM, upgrade to Starter (512Mi is tight for FastAPI + Streamlit + ONNX). |
 | UI loads, ML model missing | Logs → search for `install_model.py` / GitHub download errors |
 | API unreachable | Logs → confirm `python -m intelbrief` started |
 | Health check fails | First boot is slow; retry or increase startup timeout in service settings |

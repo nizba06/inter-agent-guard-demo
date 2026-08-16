@@ -18,3 +18,5 @@ services:
         value: "true"
       - key: AGENTGUARD_MODE
         value: enforce
+      - key: ENVIRONMENT
+        value: production

@@ -40,7 +40,11 @@ def _package_models_dir() -> Path:
 
 def _verify_hash(model_path: Path, hash_path: Path) -> None:
     expected = hash_path.read_text(encoding="utf-8").strip().lower()
-    actual = hashlib.sha256(model_path.read_bytes()).hexdigest().lower()
+    digest = hashlib.sha256()
+    with model_path.open("rb") as model_file:
+        for chunk in iter(lambda: model_file.read(1024 * 1024), b""):
+            digest.update(chunk)
+    actual = digest.hexdigest().lower()
     if actual != expected:
         raise SystemExit(
             f"ONNX hash mismatch.\n  expected={expected}\n  actual=  {actual}\n"

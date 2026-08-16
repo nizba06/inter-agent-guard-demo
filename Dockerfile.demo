@@ -15,13 +15,18 @@ COPY scripts/start_public_demo.sh ./scripts/start_public_demo.sh
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir .
 
-RUN chmod +x scripts/start_public_demo.sh
+# Bake ONNX at build time (Render free tier has 512Mi RAM — avoid runtime download + hash spike).
+RUN python install_model.py
+
+RUN sed -i 's/\r$//' scripts/start_public_demo.sh \
+    && chmod +x scripts/start_public_demo.sh
 
 ENV LLM_BACKEND=scripted \
     FIXTURE_MODE=local \
     REQUIRE_ML_MODEL=true \
     ENABLE_TRUST_ATTESTATION=true \
     AGENTGUARD_MODE=enforce \
+    ENVIRONMENT=production \
     PYTHONUNBUFFERED=1
 
 EXPOSE 8501
