@@ -12,6 +12,7 @@ from intelbrief import __version__
 from intelbrief.api.deps import get_app_settings
 from intelbrief.config import Settings
 from intelbrief.schemas import HealthResponse
+from intelbrief.security.ml_runtime import ml_model_loaded, model_on_disk
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["health"])
@@ -41,14 +42,10 @@ def health(settings: Annotated[Settings, Depends(get_app_settings)]) -> HealthRe
 def _check_ml_model(settings: Settings) -> bool:
     if not settings.require_ml_model:
         return False
-    try:
-        from agentguard import AgentGuard
-
-        guard = AgentGuard(require_ml_model=False)
-        return guard.is_ml_model_loaded
-    except Exception:
-        logger.debug("ML model health check failed", exc_info=True)
-        return False
+    if ml_model_loaded():
+        return True
+    # File on disk only — do not instantiate AgentGuard (loads ~200MB ONNX per call).
+    return model_on_disk()
 
 
 def _check_ollama(settings: Settings) -> bool:

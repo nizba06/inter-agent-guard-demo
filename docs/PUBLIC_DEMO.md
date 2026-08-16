@@ -98,7 +98,8 @@ Open http://localhost:8501 — first start may take 2–5 minutes (ML model down
 | Behavior | What to expect |
 |----------|----------------|
 | **Sleep after ~15 min idle** | Next visitor waits ~30–60s to wake |
-| **Cold start** | Model is baked into the Docker image; startup verifies hash only (~seconds) |
+| **Cold start** | Model is baked into the Docker image; ML loads on first secured demo run |
+| **Memory (512Mi free tier)** | Streamlit + FastAPI + ONNX can exceed 512Mi under load. Upgrade to **Starter** if Render reports memory-limit restarts. |
 | **PyPI downloads** | Only at **Docker build**, not per visitor |
 
 Tell users: *“First load after idle may take 1–2 minutes.”*
@@ -110,7 +111,7 @@ Tell users: *“First load after idle may take 1–2 minutes.”*
 | Problem | Action |
 |---------|--------|
 | Build fails | Render → **Logs** → check `pip install` errors |
-| **`Out of memory (used over 512Mi)`** | Ensure `ENVIRONMENT=production` (disables uvicorn reload). Model must be baked in Docker build (`RUN python install_model.py` in `Dockerfile.demo`). Redeploy after pulling latest. If still OOM, upgrade to Starter (512Mi is tight for FastAPI + Streamlit + ONNX). |
+| **`Out of memory (used over 512Mi)`** / memory-limit restart | Ensure latest deploy (shared ML runtime, no reload on `/health`). **Upgrade to Starter** if restarts continue — 512Mi is tight for FastAPI + Streamlit + ONNX. |
 | UI loads, ML model missing | Logs → search for `install_model.py` / GitHub download errors |
 | API unreachable | Logs → confirm `python -m intelbrief` started |
 | Health check fails | First boot is slow; retry or increase startup timeout in service settings |

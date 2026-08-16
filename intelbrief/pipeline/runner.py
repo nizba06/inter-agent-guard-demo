@@ -18,7 +18,8 @@ from intelbrief.config import Settings, get_settings
 from intelbrief.pipeline.graph import PipelineContext, attack_succeeded, build_graph
 from intelbrief.pipeline.tools import build_fetch_tool
 from intelbrief.schemas import AgentMessage, RunStatus, SecurityMode
-from intelbrief.security.guard import build_guard, build_task_objective
+from intelbrief.security.guard import build_task_objective
+from intelbrief.security.ml_runtime import warm_shared_guard
 from intelbrief.services.layer_labels import infer_blocking_layer
 
 logger = logging.getLogger(__name__)
@@ -47,14 +48,6 @@ class PipelineRunResult:
     error: str | None = None
 
 
-def _ensure_model_installed(settings: Settings) -> Path | None:
-    if not settings.require_ml_model:
-        return None
-    from intelbrief.utils.model_install import ensure_model
-
-    return ensure_model()
-
-
 class AnalysisRunner:
     """Runs secured or unsecured multi-agent pipelines."""
 
@@ -79,19 +72,16 @@ class AnalysisRunner:
         mode = agentguard_mode or settings.agentguard_mode
 
         if secured:
-            model_path = _ensure_model_installed(settings)
             audit_path = settings.audit_dir / f"run_{run_id}.jsonl"
             import warnings
 
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", ModelNotLoadedWarning)
-                guard = build_guard(
+                guard = warm_shared_guard(
+                    settings=settings,
                     audit_log_path=audit_path,
                     manifests_dir=settings.manifests_dir,
                     task_objective=build_task_objective(task),
-                    model_path=str(model_path) if model_path else None,
-                    require_ml_model=settings.require_ml_model,
-                    enable_trust_attestation=settings.enable_trust_attestation,
                     mode=mode,
                 )
             if settings.require_ml_model and not guard.is_ml_model_loaded:

@@ -32,10 +32,13 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     )
     if settings.require_ml_model:
         try:
-            from intelbrief.utils.model_install import ensure_model
+            from intelbrief.security.ml_runtime import model_on_disk
 
-            path = ensure_model()
-            logger.info("ml_model_ready path=%s", path)
+            if not model_on_disk():
+                from intelbrief.utils.model_install import ensure_model
+
+                ensure_model()
+            logger.info("ml_model_on_disk=%s", model_on_disk())
         except Exception:
             logger.warning("ml_model_missing — secured runs will fail until install_model.py succeeds")
     yield

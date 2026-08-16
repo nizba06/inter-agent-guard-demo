@@ -3,9 +3,6 @@
 set -e
 cd /app
 
-echo "Checking AgentGuard ML model (skipped if baked into image)..."
-python install_model.py
-
 export LLM_BACKEND="${LLM_BACKEND:-scripted}"
 export FIXTURE_MODE="${FIXTURE_MODE:-local}"
 export REQUIRE_ML_MODEL="${REQUIRE_ML_MODEL:-true}"
