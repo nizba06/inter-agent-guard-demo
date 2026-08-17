@@ -37,7 +37,7 @@ Open http://localhost:8501 — first start may take 2–5 minutes (ML model down
 2. **Connect** your GitHub account if prompted
 3. Select repository **`inter-agent-guard-demo`**
 4. Render detects **`render.yaml`** and shows service **`intelbrief-demo`**
-5. Review settings (free plan is fine) → click **Apply**
+5. Review settings — **`render.yaml` uses `plan: standard` (2GB RAM)** for ML demo runs → add a **payment method** on Render if prompted → click **Apply**
 6. Wait for deploy (**~5–15 minutes** on first run):
    - Docker build (`pip install` + `install_model.py` ONNX download **once**)
    - Container start → FastAPI + Streamlit on Render’s `$PORT`
@@ -71,7 +71,7 @@ Open http://localhost:8501 — first start may take 2–5 minutes (ML model down
    |-------|--------|
    | Runtime | **Docker** |
    | Dockerfile path | **`Dockerfile.demo`** |
-   | Plan | Free |
+   | Plan | **Standard** (2 GB RAM — required for secured demo runs) |
    | Health check path | `/` |
 
 4. Environment variables:
@@ -89,16 +89,17 @@ Open http://localhost:8501 — first start may take 2–5 minutes (ML model down
 
 ---
 
-## Free tier notes
+## Hosted plan notes
+
+The public demo needs **Standard** instance type (**2 GB RAM**, ~$7/mo). **Free** (512 MB) serves the UI but **OOMs** when visitors run **Compare both** or any secured pipeline (exit 137).
 
 | Behavior | What to expect |
 |----------|----------------|
-| **Sleep after ~15 min idle** | Next visitor waits ~30–60s to wake |
-| **Cold start** | Model is baked into the Docker image; ML loads on first secured demo run |
-| **Memory (512Mi free tier)** | Streamlit + FastAPI + ONNX can exceed 512Mi under load. Upgrade to **Standard** (2GB) if Render reports memory-limit restarts or exit 137. |
+| **Standard plan** | Secured demo runs work; no sleep spin-down (paid instance) |
+| **Cold start** | Model baked into Docker image; ML loads on first secured demo run |
 | **PyPI downloads** | Only at **Docker build**, not per visitor |
 
-Tell users: *“First load after idle may take 1–2 minutes.”*
+Tell users: *“First load after deploy may take up to 1 minute.”*
 
 ---
 
@@ -107,7 +108,7 @@ Tell users: *“First load after idle may take 1–2 minutes.”*
 | Problem | Action |
 |---------|--------|
 | Build fails | Render → **Logs** → check `pip install` errors |
-| **`Out of memory (used over 512Mi)`** / memory-limit restart | Ensure latest deploy (shared ML runtime, no reload on `/health`). **Upgrade to Starter** if restarts continue — 512Mi is tight for FastAPI + Streamlit + ONNX. |
+| **`Out of memory` / exit 137 / demo buttons fail** | Upgrade **intelbrief-demo** to **Standard** (2 GB). Free/Starter = 512 MB only — not enough for Streamlit + FastAPI + ONNX. Sync Blueprint after `plan: standard` in `render.yaml`. |
 | UI loads, ML model missing | Logs → search for `install_model.py` / GitHub download errors |
 | API unreachable | Logs → confirm `python -m intelbrief` started |
 | Health check fails | First boot is slow; retry or increase startup timeout in service settings |

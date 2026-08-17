@@ -5,7 +5,7 @@ services:
     name: intelbrief-demo
     runtime: docker
     dockerfilePath: ./Dockerfile.demo
-    plan: free
+    plan: standard  # 2GB RAM — required for Streamlit + FastAPI + ONNX ML (512Mi free tier OOMs on demo runs)
     healthCheckPath: /
     envVars:
       - key: LLM_BACKEND

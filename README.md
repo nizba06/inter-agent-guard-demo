@@ -16,7 +16,7 @@ It includes a **FastAPI** backend, **Streamlit** UI, **SQLite** run history, **r
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
-> **Public demo uses scripted LLM** for predictable outcomes (full AgentGuard ML + trust still active). For real Ollama, run locally.  
+> **Hosted demo** uses **Render Standard** (2 GB RAM) so secured ML demo runs work. **Free** tier loads the UI but OOMs on **Compare both**. For real Ollama, run locally.  
 > **Install the library:** `pip install inter-agent-guard` — the hosted demo does not run pip for visitors; install separately to use AgentGuard in your own apps.
 
 **Deploy on Render:** step-by-step guide in [docs/PUBLIC_DEMO.md](docs/PUBLIC_DEMO.md).
