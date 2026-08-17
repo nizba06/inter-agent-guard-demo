@@ -4,22 +4,67 @@
 
 It includes a **FastAPI** backend, **Streamlit** UI, **SQLite** run history, **real LLM** support (Ollama/OpenAI), and **AgentGuard** enforcement (`guard.wrap()` + MCP tool wrapping + capability manifests + trust attestation).
 
-## Try it now
+## Quick start
 
-| Option | Link |
-|--------|------|
-| **Hosted demo (zero setup)** | **[intelbrief-demo.onrender.com](https://intelbrief-demo.onrender.com)** — explore injection & impersonation in the browser (scripted LLM, full AgentGuard stack). First load after idle may take ~1 min. |
-| **Use in your project** | `pip install inter-agent-guard` · [PyPI](https://pypi.org/project/inter-agent-guard/) · [Docs](https://inter-agent-guard.readthedocs.io/) |
+Run the demo locally: **install → model → start API + UI**.
+
+| Resource | Link |
+|----------|------|
 | **5-minute demo script** | [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) |
 | **Eval evidence** | [docs/EVAL_REPORT.md](docs/EVAL_REPORT.md) |
-| **Clone & run locally** | See [Quick start](#quick-start-local) below |
+| **Use AgentGuard in your project** | `pip install inter-agent-guard` · [PyPI](https://pypi.org/project/inter-agent-guard/) · [Docs](https://inter-agent-guard.readthedocs.io/) |
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+### 1. Prerequisites
 
-> **Hosted demo** uses **Render Standard** (2 GB RAM) so secured ML demo runs work. **Free** tier loads the UI but OOMs on **Compare both**. For real Ollama, run locally.  
-> **Install the library:** `pip install inter-agent-guard` — the hosted demo does not run pip for visitors; install separately to use AgentGuard in your own apps.
+- Python **3.11** or **3.12**
+- AgentGuard ONNX model (~164 MB)
+- **[Ollama](https://ollama.com)** with `llama3.2` for real LLM — *or* set `LLM_BACKEND=scripted` in `.env` for deterministic offline runs (no Ollama)
 
-**Deploy on Render:** step-by-step guide in [docs/PUBLIC_DEMO.md](docs/PUBLIC_DEMO.md).
+### 2. Install
+
+```powershell
+cd inter-agent-guard-demo
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+py -3.12 -m pip install -e ".[dev]"
+copy .env.example .env
+py -3.12 install_model.py
+```
+
+### 3. Start Ollama (optional — skip if using `LLM_BACKEND=scripted`)
+
+```powershell
+ollama pull llama3.2
+ollama list
+```
+
+### 4. Run the demo (two terminals)
+
+**Terminal 1 — API** (fixtures + pipeline):
+
+```powershell
+py -3.12 -m intelbrief
+```
+
+**Terminal 2 — Streamlit UI**:
+
+```powershell
+streamlit run ui/streamlit_app.py
+```
+
+Open **http://localhost:8501**. Runs execute **only when you click a button** — the page does not auto-run the pipeline on load.
+
+Confirm the top metrics show **API ok** and **ML model loaded**, then click **Compare both (injection demo)**.
+
+### Docker (alternative)
+
+```powershell
+docker compose up --build
+docker compose run --rm pull-model
+```
+
+- API: http://localhost:8000/docs  
+- UI: http://localhost:8501  
 
 ## Architecture
 
@@ -79,63 +124,6 @@ Yes — edit the fixture HTML files directly. No code changes required for a new
 If you change the exfiltration instruction in the fixture, also update `INJECTED_INSTRUCTION` in `intelbrief/agents/models.py` so attack detection and the impersonation scenario stay aligned.
 
 Tests use `local://poisoned.html` (reads the same files from disk without HTTP). Set `FIXTURE_MODE=local` in `.env` to force local reads in all runs.
-
-## How to run the demo
-
-### 1. Prerequisites
-
-- Python **3.11** or **3.12**
-- [Ollama](https://ollama.com) with `llama3.2` (for real LLM)
-- AgentGuard ONNX model (~164 MB)
-
-### 2. Install
-
-```powershell
-cd inter-agent-guard-demo
-py -3.12 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-py -3.12 -m pip install -e ".[dev]"
-copy .env.example .env
-```
-
-### 3. Install AgentGuard ML model
-
-```powershell
-py -3.12 install_model.py
-```
-
-### 4. Start Ollama (real LLM)
-
-```powershell
-ollama pull llama3.2
-ollama list
-```
-
-### 5. Run API + UI (two terminals)
-
-**Terminal 1 — API** (serves fixtures + pipeline):
-
-```powershell
-py -3.12 -m intelbrief
-```
-
-**Terminal 2 — Streamlit UI**:
-
-```powershell
-streamlit run ui/streamlit_app.py
-```
-
-Open **http://localhost:8501**. Runs execute **only when you click a button** — the page does not auto-run the pipeline on load.
-
-### 6. Docker (full stack)
-
-```powershell
-docker compose up --build
-docker compose run --rm pull-model
-```
-
-- API: http://localhost:8000/docs  
-- UI: http://localhost:8501  
 
 ## Using the Streamlit UI
 
@@ -287,13 +275,12 @@ py -3.12 install_model.py
 py -3.12 scripts/generate_eval_report.py
 ```
 
-## Public demo assets
+## Documentation
 
 | Document | Purpose |
 |----------|---------|
 | [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) | 5-minute live or recorded demo script |
 | [docs/EVAL_REPORT.md](docs/EVAL_REPORT.md) | Eval one-pager (rule vs ML vs full stack) |
-| [docs/PUBLIC_DEMO.md](docs/PUBLIC_DEMO.md) | Hosted deploy on Render |
 
 ## License
 
