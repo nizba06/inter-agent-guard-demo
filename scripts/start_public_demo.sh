@@ -28,6 +28,15 @@ echo "Starting API on ${API_HOST}:${API_PORT}..."
 python -m intelbrief &
 API_PID=$!
 
+echo "Waiting for API health (Streamlit is already bound on ${PORT})..."
+for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 20 25 30; do
+  if curl -sf "http://127.0.0.1:8000/api/v1/health" >/dev/null 2>&1; then
+    echo "API ready."
+    break
+  fi
+  sleep 2
+done
+
 # Keep container alive; exit if either process dies.
 while kill -0 "${STREAMLIT_PID}" 2>/dev/null && kill -0 "${API_PID}" 2>/dev/null; do
   sleep 2

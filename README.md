@@ -8,7 +8,7 @@ It includes a **FastAPI** backend, **Streamlit** UI, **SQLite** run history, **r
 
 | Option | Link |
 |--------|------|
-| **Hosted demo (zero setup)** | Deploy on [Render](docs/PUBLIC_DEMO.md) — add your live URL here after deploy |
+| **Hosted demo (zero setup)** | **[intelbrief-demo.onrender.com](https://intelbrief-demo.onrender.com)** — explore injection & impersonation in the browser (scripted LLM, full AgentGuard stack). First load after idle may take ~1 min. |
 | **Use in your project** | `pip install inter-agent-guard` · [PyPI](https://pypi.org/project/inter-agent-guard/) · [Docs](https://inter-agent-guard.readthedocs.io/) |
 | **5-minute demo script** | [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) |
 | **Eval evidence** | [docs/EVAL_REPORT.md](docs/EVAL_REPORT.md) |

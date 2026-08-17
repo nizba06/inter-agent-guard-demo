@@ -47,11 +47,7 @@ Open http://localhost:8501 — first start may take 2–5 minutes (ML model down
 ## Step 3 — Get your public URL
 
 1. Open the **`intelbrief-demo`** service in Render
-2. Copy the URL at the top, e.g.:
-   ```text
-   https://intelbrief-demo.onrender.com
-   ```
-3. Paste it into **`README.md`** under **Try it now → Hosted demo**
+2. Your public URL: **https://intelbrief-demo.onrender.com** (also linked from `README.md`)
 
 ---
 
@@ -99,7 +95,7 @@ Open http://localhost:8501 — first start may take 2–5 minutes (ML model down
 |----------|----------------|
 | **Sleep after ~15 min idle** | Next visitor waits ~30–60s to wake |
 | **Cold start** | Model is baked into the Docker image; ML loads on first secured demo run |
-| **Memory (512Mi free tier)** | Streamlit + FastAPI + ONNX can exceed 512Mi under load. Upgrade to **Starter** if Render reports memory-limit restarts. |
+| **Memory (512Mi free tier)** | Streamlit + FastAPI + ONNX can exceed 512Mi under load. Upgrade to **Standard** (2GB) if Render reports memory-limit restarts or exit 137. |
 | **PyPI downloads** | Only at **Docker build**, not per visitor |
 
 Tell users: *“First load after idle may take 1–2 minutes.”*
@@ -121,7 +117,7 @@ Tell users: *“First load after idle may take 1–2 minutes.”*
 ## After deploy — links to share
 
 ```text
-Try live:   https://YOUR-SERVICE.onrender.com
+Try live:   https://intelbrief-demo.onrender.com
 Install:    pip install inter-agent-guard
 Demo repo:  https://github.com/nizba06/inter-agent-guard-demo
 Library:    https://github.com/nizba06/agentguard

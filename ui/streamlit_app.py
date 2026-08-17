@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import time
 from typing import Any
 
 import httpx
@@ -32,6 +33,19 @@ def _get_health() -> dict[str, Any]:
     response = _api_client().get("/health")
     response.raise_for_status()
     return response.json()
+
+
+def _wait_for_health(*, attempts: int = 30, delay_seconds: float = 2.0) -> dict[str, Any]:
+    """Retry health while the API finishes cold start (Render free tier can be slow)."""
+    last_exc: Exception | None = None
+    for _ in range(attempts):
+        try:
+            return _get_health()
+        except httpx.HTTPError as exc:
+            last_exc = exc
+            time.sleep(delay_seconds)
+    assert last_exc is not None
+    raise last_exc
 
 
 @st.cache_data(ttl=5, show_spinner=False)
@@ -315,9 +329,10 @@ def main() -> None:
         st.session_state["selected_run"] = None
 
     try:
-        health = _get_health()
+        with st.spinner("Connecting to API (cold start may take up to 1 minute)…"):
+            health = _wait_for_health()
     except httpx.HTTPError as exc:
-        st.error(f"API unreachable at {API_BASE}. Start the API: `python -m intelbrief`")
+        st.error(f"API unreachable at {API_BASE}. The service may be restarting — refresh in a minute.")
         st.code(str(exc))
         st.stop()
 
